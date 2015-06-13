@@ -32,11 +32,11 @@ ISR(ADCA_CH0_vect)
 {
     adcLIGHT = ADCA_CH0_RES;    //CH0 ADC result here
     
-    printf("%04X\n", adcLIGHT);
+    //printf("%04X\n", adcLIGHT);
     
     
-    ADCA_CH0_CTRL |= ADC_CH_START_bm;    //Start ADC'ing for CH0
-    PORTR.OUTTGL = _BV(1) | _BV(0);
+    //ADCA_CH0_CTRL |= ADC_CH_START_bm;    //Start ADC'ing for CH0
+    //PORTR.OUTTGL = _BV(1) | _BV(0);
 }
 
 
@@ -46,6 +46,7 @@ volatile uint16_t adc_data[100];
 
 int main(void)
 {
+    uint8_t data = 0;
 
     // Set the LED to output.
     PORTR.DIRSET = _BV(1) | _BV(0);
@@ -73,10 +74,17 @@ int main(void)
     */
     
     ADCA_CH0_CTRL |= ADC_CH_START_bm;    
+    
 
     
     for(;;)
     {
+        
+        // echo back for testing stdio.
+        data = getchar();
+        printf("%c", data);
+        
+        PORTR.OUTTGL = _BV(1) | _BV(0);
     
         /*
         if(TCE0.INTFLAGS & TC0_OVFIF_bm) {
@@ -121,7 +129,7 @@ void dma_test(void)
     /*
     setAddr(arrS, &(DMA.CH0.SRCADDR0), &(DMA.CH0.SRCADDR1), &(DMA.CH0.SRCADDR2));
     setAddr(arrD, &(DMA.CH0.DESTADDR0), &(DMA.CH0.DESTADDR1), &(DMA.CH0.DESTADDR2));
-    */
+    //*/
     
     /*
     DMA.CH0.SRCADDR0 = 0xFF & (uint32_t)arrS;
@@ -196,7 +204,7 @@ void ADC_Init(void)        //NOT A COMPLETE INITIALIZER ... just cleaning the ma
     ADCA_CH0_MUXCTRL = ADC_CH_MUXPOS_PIN0_gc;   //
     ADCA_CTRLA = ADC_ENABLE_bm;
     ADCA_CTRLB = ADC_RESOLUTION_12BIT_gc;
-    ADCA_PRESCALER = ADC_PRESCALER_DIV4_gc;
+    ADCA_PRESCALER = ADC_PRESCALER_DIV512_gc;
     ADCA_REFCTRL = ADC_REFSEL_INTVCC_gc ;//ADC_REFSEL_VCC_gc;           // ADC_REFSEL_AREFA_gc;
     ADCA_CH0_INTCTRL = ADC_CH_INTLVL_HI_gc;
     

@@ -38,8 +38,7 @@ void usartxx_init(USART_t *usartxx, usartxx_t * usartBuf)
     usartxx->CTRLC = USART_CMODE_ASYNCHRONOUS_gc | USART_PMODE_DISABLED_gc | USART_CHSIZE_8BIT_gc;
     
     // Turn on USART TX and RX. 
-    //usartxx->CTRLB = USART_RXEN_bm | USART_TXEN_bm;
-    usartxx->CTRLB = USART_TXEN_bm;
+    usartxx->CTRLB = USART_RXEN_bm | USART_TXEN_bm;
     
 } // End of usartxx_init().
 
