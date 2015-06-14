@@ -4,7 +4,10 @@
 #include <stdio.h>
 #include <avr/interrupt.h>
 
+#include "system.h"
 #include "stdioWrapper.h"
+#include "spi.h"
+
 
 #define BUFFER_SIZE 50
 
@@ -32,12 +35,10 @@ void main(void)
 {
     uint16_t index = 0;
 
-    // System setup.
-    // Set the LED to output.
-    PORTR.DIRSET = _BV(1) | _BV(0);
-    PORTR.OUTSET = _BV(1);
-    
+    // System setup.    
     stdioWrapper_init(&USARTC0);
+    system_gpio_init();
+    
     ADC_Init();
     dma_test();
     
@@ -46,6 +47,8 @@ void main(void)
     
     // Test start.
     printf("Start\n");
+    
+    spix_init(&SPID);
     
 
     // Start the ADC for the first time.
