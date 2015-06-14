@@ -40,6 +40,8 @@ void main(void)
     system_gpio_init();
     
     ADC_Init();
+    spix_init(&SPIC);
+    
     dma_test();
     
     PMIC.CTRL = PMIC_HILVLEN_bm;
@@ -47,8 +49,6 @@ void main(void)
     
     // Test start.
     printf("Start\n");
-    
-    spix_init(&SPID);
     
 
     // Start the ADC for the first time.

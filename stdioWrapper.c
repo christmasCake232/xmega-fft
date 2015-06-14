@@ -20,7 +20,6 @@ static FILE usart_stdio = FDEV_SETUP_STREAM(usart_putchar, usart_getchar, _FDEV_
 
 void stdioWrapper_init(USART_t * usartxx)
 {
-    
     // To setup the usart for stdio.
     usartxx_init(usartxx, &usartBuf);
     

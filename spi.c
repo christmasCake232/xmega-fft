@@ -1,15 +1,15 @@
-
+/*
+ * SPID is failed the loopback test.
+ * This is likely due to the LCD or data flash.
+ * 
+ * SPIC passed the loopback test.
+ * 
+ */
 
 #include <avr/io.h>
 #include <stdio.h>
-#include <util/delay.h>
 
 #include "spi.h"
-
-
-
-
-
 
 
 
@@ -18,37 +18,15 @@ static inline void spix_io_init(const SPI_t *);
 
 void spix_init(SPI_t *spix)
 {
-    
     spix_io_init(spix);
     
-
     spix->CTRL = SPI_ENABLE_bm | SPI_MASTER_bm | SPI_MODE_1_gc | SPI_PRESCALER_DIV128_gc;
     
-    
-    // Test code here.
-    
-    uint8_t data = 0;
-    uint8_t index = 0;
-    
-    for(index = 0; index < 20; ++index)
-    {
-        data = spix_readWrite(spix, index +1);
-        
-        printf("%02X = %02X\n", index +1, data);
-    }
-    
-    
-    for(;;);
-    
-    
-    
-        
 } // End of spix_init().
 
 
 uint8_t spix_readWrite(SPI_t *spix, const uint8_t dataOut)
 {
-    
     spix->STATUS = SPI_IF_bm;
     
     // Clock the data out.
@@ -68,16 +46,27 @@ uint8_t spix_readWrite(SPI_t *spix, const uint8_t dataOut)
 static inline void spix_io_init(const SPI_t *spix)
 {
     
-    if(spix == &SPID)
-    {
+    if(spix == &SPID) {
+        
         // MOSI, SCK, SS.
         PORTD.DIRSET = (uint8_t)(_BV(3) | _BV(1) | _BV(0));
+        // Pull SS high.
+        PORTD.OUTSET = (uint8_t)(_BV(0));
         // MISO.
         PORTD.DIRCLR = (uint8_t)(_BV(2));
+    
+    } else if(spix == &SPIC) {
+        
+        // SCK, MOSI, SS
+        PORTC.DIRSET = (uint8_t)(_BV(7) | _BV(5) | _BV(4));
+        // Pull SS high.
+        PORTD.OUTSET = (uint8_t)(_BV(4));
+        // MISO.
+        PORTC.DIRCLR = (uint8_t)(_BV(6));
         
     } else {
-        
-        
+        // That SPI is not supported!!
+        // Add more as needed.
     }
     
-}
+} // End of spix_io_init().
