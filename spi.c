@@ -1,6 +1,6 @@
 /*
- * SPID is failed the loopback test.
- * This is likely due to the LCD or data flash.
+ * SPID uses the same pins as USB, POWER LED and STATUS LED.
+ * SPID should not be used. 
  * 
  * SPIC passed the loopback test.
  * 
