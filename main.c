@@ -7,6 +7,7 @@
 #include "system.h"
 #include "stdioWrapper.h"
 #include "spi.h"
+#include "usart_spi.h"
 
 
 #define BUFFER_SIZE 50

@@ -9,7 +9,7 @@
 void usartxx_spi_init(USART_t *);
 
 
-uint8_t usartxx_spi_readWrite(const uint8_t);
+uint8_t usartxx_spi_readWrite(USART_t *, const uint8_t);
 
 
 

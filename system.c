@@ -35,10 +35,14 @@ void system_gpio_init(void)
     // Set SS/CS as an output and pull it high.
     PORTF.DIRSET = (uint8_t)(_BV(3));
     PORTF.OUTSET = (uint8_t)(_BV(3));
-    
-    // LED backlight setup.
+    // Set RS as an output and pull it high. 
+    PORTD.DIRSET = (uint8_t)(_BV(0));
+    PORTD.OUTSET = (uint8_t)(_BV(0));
+    // Set LCD reset as an output and pull it high.
+    PORTA.DIRSET = (uint8_t)(_BV(3));
+    PORTA.OUTSET = (uint8_t)(_BV(3));
+    // LCD backlight setup.
     PORTE.DIRSET = (uint8_t)(_BV(4));
     PORTE.OUTSET = (uint8_t)(_BV(4));
-    
 
 } // End of system_gpio_init().

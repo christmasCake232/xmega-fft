@@ -7,7 +7,6 @@
  */
 
 #include <avr/io.h>
-#include <stdio.h>
 
 #include "spi.h"
 
