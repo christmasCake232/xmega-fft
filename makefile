@@ -54,7 +54,7 @@ WALL=	-Waddress \
 
 CC=avr-gcc
 CFLAGS= $(WALL) -std=c11 -DF_CPU=$(F_CPU) -O3 -g
-OBJS= main.o usart.o CircularBuffer.o stdioWrapper.o system.o spi.o usart_spi.o
+OBJS= main.o usart.o CircularBuffer.o stdioWrapper.o system.o spi.o usart_spi.o lcd.o
 
 # Project setting.
 PROJECTNAME=fft
