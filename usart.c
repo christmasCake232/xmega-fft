@@ -1,8 +1,8 @@
 /*
  * Add support for interrupts.
  * Add buffers for both TX and RX.
+ * Add support for the 32Mhz CPU clock.
  */
-
 
 #include <avr/io.h>
 

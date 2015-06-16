@@ -30,19 +30,18 @@ ISR(ADCA_CH0_vect)
 }
 
 
-
-
 volatile uint16_t dma_data[BUFFER_SIZE];
 
 
 void main(void)
 {
-    uint16_t index = 0;
 
-    // System setup.    
-    stdioWrapper_init(&USARTC0);
+    // System setup.
+    system_clocks_init();
     system_gpio_init();
+    stdioWrapper_init(&USARTC0);
     
+    // Peripheral setup.
     adcx_init();
     spix_init(&SPIC);
     dma_init((uint8_t *)dma_data, BUFFER_SIZE *2);
@@ -52,12 +51,10 @@ void main(void)
     
     // Test start.
     printf("Start\n");
-    PORTD.OUTCLR = (uint8_t)(_BV(4));
     
     
     for(;;)
     {
-        
         adcx_start();
         
         loop_until_bit_is_set(DMA.INTFLAGS, DMA_CH0TRNIF_bp);
@@ -65,9 +62,9 @@ void main(void)
         
         DMA.CH0.CTRLA |= DMA_CH_ENABLE_bm;
         
+        PORTR.OUTTGL = (uint8_t)(_BV(0));
         
-        PORTR.OUTTGL = (uint8_t)(_BV(0));        
-    }
+    } // End of forever loop.
     
 } // End of main().
 

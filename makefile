@@ -16,7 +16,7 @@ NC=\033[0m
 
 # AVR setting.
 MMCU=atxmega256a3bu
-F_CPU=2000000UL
+F_CPU=32000000UL
 
 # Compiler and Linker setting. 
 # Warnings
