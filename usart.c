@@ -28,10 +28,15 @@ void usartxx_init(USART_t *usartxx, usartxx_t * usartBuf)
     
     
     // Set USART baud rate.
-    // Assuming F_CPU is fixed at 2MHz.
-    // Baud Rate 9600 @ 2MHz.
+    /*
+    // Assuming F_CPU is fixed at 2MHz: Baud Rate 9600 @ 2MHz.
     usartxx->BAUDCTRLB = 0; // BSCALE = 0 as well.
     usartxx->BAUDCTRLA = 12;
+    //*/
+    // Assuming F_CPU is fixed at 32MHz: Baud Rate 9600 @ 32MHz.
+    usartxx->BAUDCTRLB = 0; // BSCALE = 0 as well.
+    usartxx->BAUDCTRLA = 207;
+    
     
     // Setup USART frame format and size.
     // No stop bit.
