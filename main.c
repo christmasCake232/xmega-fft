@@ -23,6 +23,8 @@ void dma_test(void);
 
 ISR(ADCA_CH0_vect)
 {
+    PORTR.OUTTGL = (uint8_t)(_BV(1));
+    
     // If the DMA transaction is incomplete, then start the next conversion.
     if(bit_is_clear(DMA.INTFLAGS, DMA_CH0TRNIF_bp))
         ADCA.CH0.CTRL |= ADC_CH_START_bm; // Start ADC'ing for CH0.
@@ -43,7 +45,7 @@ void main(void)
     
     // Peripheral setup.
     adcx_init();
-    spix_init(&SPIC);
+    usartxx_spi_init(&USARTD0);
     dma_init((uint8_t *)dma_data, BUFFER_SIZE *2);
     
     PMIC.CTRL = PMIC_HILVLEN_bm;
