@@ -27,7 +27,7 @@ void usartxx_spi_init(USART_t *usartxx)
     usartxx->BAUDCTRLB = 0; // BSCALE = 0 as well.
     usartxx->BAUDCTRLA = 12;
     
-    // Set USART to Master SPI mode. 
+    // Set USART to Master SPI mode. UDORD(2) UCPHA(1)
     usartxx->CTRLC = USART_CMODE_MSPI_gc;
     
     // Turn on USART TX and RX. 
@@ -61,7 +61,7 @@ static inline void usartxx_spi_io_init(const USART_t *usartxx)
         // Set MOSI, SCK and SS as outputs.
         PORTD.DIRSET = (uint8_t)(_BV(3) | _BV(1) | _BV(0));
         // Pull SS high.
-        PORTD.OUTSET = (uint8_t)(_BV(0));
+        PORTD.OUTSET = (uint8_t)(_BV(1) | _BV(0));
         // Set MISO as an input.
         PORTD.DIRCLR = (uint8_t)(_BV(2));
         

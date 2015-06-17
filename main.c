@@ -7,10 +7,10 @@
 
 #include "system.h"
 #include "stdioWrapper.h"
-#include "spi.h"
 #include "usart_spi.h"
 #include "adc.h"
 #include "dma.h"
+#include "lcd.h"
 
 
 #define BUFFER_SIZE 1024
@@ -45,7 +45,6 @@ void main(void)
     
     // Peripheral setup.
     adcx_init();
-    usartxx_spi_init(&USARTD0);
     dma_init((uint8_t *)dma_data, BUFFER_SIZE *2);
     
     PMIC.CTRL = PMIC_HILVLEN_bm;
@@ -53,6 +52,8 @@ void main(void)
     
     // Test start.
     printf("Start\n");
+    
+    lcd_init();
     
     
     for(;;)
