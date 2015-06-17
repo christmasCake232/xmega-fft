@@ -6,6 +6,32 @@
 #include "system.h"
 
 
+void system_clocks_init(void)
+{
+    // Enable the 32KHz, 32MHz and 2MHz clocks.
+    OSC_CTRL = OSC_RC32KEN_bm | OSC_RC32MEN_bm | OSC_RC2MEN_bm;
+    
+    // Block until all 3 clocks are ready.
+    loop_until_bit_is_set(OSC.STATUS, OSC_RC32KRDY_bp);
+    loop_until_bit_is_set(OSC.STATUS, OSC_RC32MRDY_bp);
+    loop_until_bit_is_set(OSC.STATUS, OSC_RC2MRDY_bp);
+    
+    
+    // Calibrate oscillator 32MHz internal oscillator
+    // 32MHz oscillator reference selection: 32.768kHz internal oscillator.
+    OSC.DFLLCTRL = OSC_RC32MCREF_RC32K_gc;
+    DFLLRC32M.CTRL = DFLL_ENABLE_bm;
+    //*/
+    
+    //Trigger protection mechanism for clock change.
+    CCP = CCP_IOREG_gc;
+    // Switch the system clock to 32MHz.
+    CLK.CTRL = CLK_SCLKSEL_RC32M_gc;
+    
+} // End of system_clocks_init().
+
+
+
  // I can't find the names for the pins. 
 void system_gpio_init(void)
 {
