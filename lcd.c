@@ -33,46 +33,42 @@ static USART_t *spiPort = &USARTD0;
 void lcd_init(void)
 {
     
-    usartxx_spi_init(spiPort);
+    //usartxx_spi_init(spiPort);
     strobeReset();
     
  
+    sendCmd(CMD_SET_BIAS_7);
     
-    // Set the LCD bias to 1/7th;
-    sendCmd(0xA3);
+    sendCmd(CMD_SET_ADC_NORMAL);
+    
+    sendCmd(CMD_SET_COM_NORMAL);
+    
+    sendCmd(CMD_SET_DISP_START_LINE);
     
     
-    // Horizontally "normal" (not flipped)
-    // ADC normal.
-    sendCmd(0xA0);
-    
-    //SET_COM_NORMAL 
-    sendCmd(0xC0);
-    
-    //SET_DISP_START_LINE
-    sendCmd(0x40);
-    
-    sendCmd(0x28 | 0x04);
+    sendCmd(CMD_SET_POWER_CONTROL | 0x4);
     _delay_ms(50);
     
-    sendCmd(0x28 | 0x06);
+    sendCmd(CMD_SET_POWER_CONTROL | 0x6);
     _delay_ms(50);
     
-    sendCmd(0x28 | 0x07);
-    _delay_ms(50);
+    sendCmd(CMD_SET_POWER_CONTROL | 0x7);
+    _delay_ms(10);
     
-    sendCmd(0x20 | 0x06);
+    sendCmd(CMD_SET_RESISTOR_RATIO | 0x6);
     
-    sendCmd(0xAF);
-    sendCmd(0xA4);
+    // ------------------
+    
+    sendCmd(CMD_DISPLAY_ON);
+    
+    sendCmd(CMD_SET_ALLPTS_NORMAL);
+    
+    // set brightness
+    sendCmd(CMD_SET_VOLUME_FIRST);
+    sendCmd(CMD_SET_VOLUME_SECOND | (0x18 & 0x3f));
     
     
     
-    
-    
-    
-    // Command 0x40: go back to the top left of the display
-    sendCmd(0x40);
     
     uint16_t i = 0;
     
@@ -123,6 +119,27 @@ static inline void sendData(const uint8_t data)
     
 } // End of sendData().
 
+inline void spiwrite(uint8_t c) {
+    
+    uint8_t i;
+    
+    for(i = 7; i >= 0; --i)
+    {
+        // SCLK low. 
+        PORTD.OUTCLR = _BV(1);
+        
+        if(c & _BV(i))
+            PORTD.OUTSET = _BV(3);
+        else 
+            PORTD.OUTSET =_BV(3);
+        
+        PORTD.OUTSET = _BV(1);
+    }
+    
+}
+
+
+
 static inline void send(const uint8_t data)
 {
     // SS low.
@@ -130,6 +147,7 @@ static inline void send(const uint8_t data)
     
     // Set the data to the LCD.
     usartxx_spi_readWrite(spiPort, data);
+    //spiwrite(data);
     
     // SS high
     PORTF.OUTSET = (uint8_t)(_BV(3));

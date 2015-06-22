@@ -28,7 +28,7 @@ void usartxx_spi_init(USART_t *usartxx)
     usartxx->BAUDCTRLA = 12;
     
     // Set USART to Master SPI mode. UDORD(2) UCPHA(1)
-    usartxx->CTRLC = USART_CMODE_MSPI_gc;
+    usartxx->CTRLC = USART_CMODE_MSPI_gc | _BV(1);
     
     // Turn on USART TX and RX. 
     usartxx->CTRLB = USART_RXEN_bm | USART_TXEN_bm;

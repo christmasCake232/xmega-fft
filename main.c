@@ -13,7 +13,7 @@
 #include "lcd.h"
 
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE (1024 << 1)
 
 
 //void ADC_Init(void);
