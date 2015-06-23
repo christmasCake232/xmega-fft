@@ -8,9 +8,11 @@
 
 void dac_init(void)
 {
-    DACB.CTRLA = DAC_IDOEN_bm | DAC_ENABLE_bm;
+    PORTB.OUTCLR = (uint8_t)(_BV(2));
     
-    DACB.CTRLB = DAC_CHSEL_SINGLE_gc | DAC_CH0TRIG_bm;
+    DACB.CTRLA = DAC_IDOEN_bm /*DAC_CH0EN_bm*/ | DAC_ENABLE_bm;
+    
+    DACB.CTRLB = DAC_CHSEL_SINGLE_gc;
     
     DACB.CTRLC = DAC_REFSEL_INT1V_gc;
 }

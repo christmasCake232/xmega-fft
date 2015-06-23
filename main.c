@@ -11,6 +11,7 @@
 #include "adc.h"
 #include "dma.h"
 #include "lcd.h"
+#include "dac.h"
 
 
 #define BUFFER_SIZE (1024 << 1)
@@ -21,13 +22,13 @@ void dma_test(void);
 
 
 
-ISR(ADCA_CH0_vect)
+ISR(ADCB_CH0_vect)
 {
     PORTR.OUTTGL = (uint8_t)(_BV(1));
     
     // If the DMA transaction is incomplete, then start the next conversion.
     if(bit_is_clear(DMA.INTFLAGS, DMA_CH0TRNIF_bp))
-        ADCA.CH0.CTRL |= ADC_CH_START_bm; // Start ADC'ing for CH0.
+        adcx_start();
 
 }
 
@@ -45,6 +46,7 @@ void main(void)
     
     // Peripheral setup.
     adcx_init();
+    dac_init();
     dma_init((uint8_t *)dma_data, BUFFER_SIZE *2);
     
     PMIC.CTRL = PMIC_HILVLEN_bm;
@@ -53,17 +55,25 @@ void main(void)
     // Test start.
     printf("Start\n");
     
-    lcd_init();
+   //lcd_init();
+   
+   uint16_t dacData = 0;
     
     
     for(;;)
     {
+        ++dacData;
+        dacData &= 0x0FFF;
+        
+        dac_write(dacData);
+        
         adcx_start();
         
-        loop_until_bit_is_set(DMA.INTFLAGS, DMA_CH0TRNIF_bp);
-        DMA.INTFLAGS |= DMA_CH0TRNIF_bm;
+        dma_block();
         
-        DMA.CH0.CTRLA |= DMA_CH_ENABLE_bm;
+        
+        printf("%03X %03X :: %03X\n", dacData, dma_data[100], dma_data[100] - dacData);
+        
         
         PORTR.OUTTGL = (uint8_t)(_BV(0));
         
