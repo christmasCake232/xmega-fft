@@ -11,7 +11,8 @@
 #include "usart_spi.h"
 #include "ST7565R.h"
 
-
+#define PAGE_COUNT 4
+#define COLUMN_COUNT 128
 
 
 
@@ -80,22 +81,48 @@ void lcd_init(void)
 } // End of lcd_init().
 
 
+
 void lcd_clearScreen(void) 
 {
-    uint8_t p;
-    uint8_t c;
-    for(p = 0; p < 8; ++p)
+    uint8_t p = 0;
+    uint8_t c = 0;
+    
+    for(p = 0; p < PAGE_COUNT; ++p)
     {
         sendCmd(CMD_SET_PAGE | p);
-        for(c = 0; c < 129; c++)
+        for(c = 0; c < COLUMN_COUNT; ++c)
         {
-            sendCmd(CMD_SET_COLUMN_LOWER | (c & 0xf));
-            sendCmd(CMD_SET_COLUMN_UPPER | ((c >> 4) & 0xf));
+            sendCmd(CMD_SET_COLUMN_LOWER | (c & 0x0F));
+            sendCmd(CMD_SET_COLUMN_UPPER | ((c >> 4) & 0x0F));
+            
             sendData(0x00);
-        }     
+        }
     }
-}
+    
+} // End of lcd_clearScreen().
 
+// TODO: this is not real. For testing.
+void lcd_writeBuffer(uint8_t *buf)
+{
+    uint8_t p = 0;
+    uint8_t c = 0;
+    uint16_t index = 0;
+    
+    for(p = 0; p < PAGE_COUNT; ++p)
+    {
+        sendCmd(CMD_SET_PAGE | p);
+        for(c = 0; c < COLUMN_COUNT; ++c)
+        {
+            sendCmd(CMD_SET_COLUMN_LOWER | (c & 0x0F));
+            sendCmd(CMD_SET_COLUMN_UPPER | ((c >> 4) & 0x0F));
+            
+            sendData(buf[index]);
+            //++index;
+            index += 2;
+        }
+    }
+    
+}
 
 
 
@@ -128,7 +155,8 @@ static inline void sendCmd(const uint8_t c)
     
     // SS high
     PORTF.OUTSET = (uint8_t)(_BV(3));
-}
+    
+} // End of sendCmd().
 
 static inline void sendData(const uint8_t c)
 {
@@ -143,13 +171,15 @@ static inline void sendData(const uint8_t c)
     
     // SS high
     PORTF.OUTSET = (uint8_t)(_BV(3));
-}
+    
+} // End of sendData().
 
 static inline void st7565_set_brightness(uint8_t val)
 {
     sendCmd(CMD_SET_VOLUME_FIRST);
-    sendCmd(CMD_SET_VOLUME_SECOND | (val & 0x3f));
-}
+    sendCmd(CMD_SET_VOLUME_SECOND | (val & 0x3F));
+    
+} // End of st7565_set_brightness().
 
 
 

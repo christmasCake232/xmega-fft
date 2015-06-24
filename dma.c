@@ -23,14 +23,14 @@ void dma_init(uint8_t *arr, const uint16_t arrSize)
                      | DMA_CH_DESTDIR_INC_gc;
     
     // Trigger off ACDA CH0.
-    DMA.CH0.TRIGSRC = DMA_CH_TRIGSRC_ADCB_CH0_gc;
+    DMA.CH0.TRIGSRC = DMA_CH_TRIGSRC_ADCA_CH0_gc;
 
     // The data size is 16bits.
     // Transaction count is 2X the size of the array.
     DMA.CH0.TRFCNT = arrSize;
     
     // Data from tht ADCA CH0.
-    setAddr(&ADCB_CH0_RES, &(DMA.CH0.SRCADDR0), &(DMA.CH0.SRCADDR1), &(DMA.CH0.SRCADDR2));
+    setAddr(&ADCA.CH0.RES, &(DMA.CH0.SRCADDR0), &(DMA.CH0.SRCADDR1), &(DMA.CH0.SRCADDR2));
     
     // Data to the array.
     setAddr(arr, &(DMA.CH0.DESTADDR0), &(DMA.CH0.DESTADDR1), &(DMA.CH0.DESTADDR2));

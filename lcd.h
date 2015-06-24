@@ -9,6 +9,8 @@ void lcd_init(void);
 
 void lcd_clearScreen(void);
 
+void lcd_writeBuffer(uint8_t *);
+
 
 
 
