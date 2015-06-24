@@ -1,6 +1,7 @@
 /*
  * reference: https://github.com/adafruit/ST7565-LCD
  * 
+ * 
  */
 
 
@@ -19,7 +20,7 @@
 static inline void strobeReset(void);
 static inline void sendCmd(const uint8_t);
 static inline void sendData(const uint8_t);
-static inline void st7565_set_brightness(uint8_t);
+static inline void setBrightness(uint8_t);
 
 static inline uint8_t foo(const uint8_t, const uint8_t);
 
@@ -63,7 +64,6 @@ void lcd_init(void)
     _delay_ms(10);
      
     // set lcd operating voltage (regulator resistor, ref voltage resistor) 
-
     sendCmd(CMD_SET_RESISTOR_RATIO | 0x2);    
     
     // ----
@@ -73,9 +73,9 @@ void lcd_init(void)
     
     sendCmd(CMD_SET_ALLPTS_NORMAL);
     
-    st7565_set_brightness(0x18);
+    setBrightness(0x18);
     
-    
+       
     lcd_clearScreen();
     
     
@@ -125,9 +125,7 @@ void lcd_barGraph(uint8_t *arr)
         }
     }
     
-    
-}
-
+} // End of lcd_barGraph().
 
 
 /* <----- static inline fun() -----> */
@@ -155,7 +153,6 @@ static inline void sendCmd(const uint8_t c)
     
     // Set the data to the LCD.
     usartxx_spi_readWrite(&USARTD0, c);
-    //spiwrite(data);
     
     // SS high
     PORTF.OUTSET = (uint8_t)(_BV(3));
@@ -171,19 +168,18 @@ static inline void sendData(const uint8_t c)
     
     // Set the data to the LCD.
     usartxx_spi_readWrite(&USARTD0, c);
-    //spiwrite(data);
     
     // SS high
     PORTF.OUTSET = (uint8_t)(_BV(3));
     
 } // End of sendData().
 
-static inline void st7565_set_brightness(uint8_t val)
+static inline void setBrightness(uint8_t val)
 {
     sendCmd(CMD_SET_VOLUME_FIRST);
     sendCmd(CMD_SET_VOLUME_SECOND | (val & 0x3F));
     
-} // End of st7565_set_brightness().
+} // End of setBrightness().
 
 
 static inline uint8_t foo(const uint8_t d, const uint8_t p)

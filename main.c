@@ -13,7 +13,7 @@
 #include "dac.h"
 
 
-#define BUFFER_SIZE (1024)
+#define BUFFER_SIZE (128)
 
 
 
@@ -54,8 +54,15 @@ ISR(ADCA_CH0_vect)
 
 }
 
+uint16_t map(uint16_t x, uint16_t in_min, uint16_t in_max, uint16_t out_min, uint16_t out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 
-volatile uint16_t dma_data[BUFFER_SIZE];
+
+
+volatile uint16_t dmaData[BUFFER_SIZE];
+volatile uint8_t lcdData[128];
 
 
 void main(void)
@@ -69,7 +76,7 @@ void main(void)
     // Peripheral setup.
     adcx_init();
     //dac_init();
-    dma_init((uint8_t *)dma_data, BUFFER_SIZE *2);
+    dma_init((uint8_t *)dmaData, BUFFER_SIZE *2);
     lcd_init();
     
     PMIC.CTRL = PMIC_HILVLEN_bm;
@@ -79,26 +86,32 @@ void main(void)
     printf("Start\n");
     
     uint8_t index;
-    uint8_t temp;
-    
-    
+    uint16_t min = 0;
+    uint16_t max = 0x0FFF;
+        
     for(;;)
     {
-
+        if(SW1_IS_SET())
+        {
+            min += 8;
+            while(SW1_IS_SET());
+        }
+        
+        if(SW2_IS_SET())
+        {
+            max -= 64;
+            while(SW2_IS_SET());
+        }
+        
+        
         adcx_start();
         dma_block();
         
-        
-        lcd_barGraph(sineTable);
-        
         for(index = 0; index < 128; ++index)
-        {
-            if(index +1 > 127)
-                sineTable[index] = sineTable[0];
-            else
-                sineTable[index] = sineTable[index +1];
-        }
+            lcdData[index] = map(dmaData[index], min, max, 0, 32);
         
+        
+        lcd_barGraph((uint8_t *)lcdData);
     }
     
 
