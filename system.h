@@ -5,9 +5,9 @@
 
 #include <avr/io.h>
 
-#define SW0_IS_SET() (PORTE.IN & (_BV(5)))
-#define SW1_IS_SET() (PORTF.IN & (_BV(1)))
-#define SW2_IS_SET() (PORTF.IN & (_BV(2)))
+#define SW0_IS_SET() (!(PORTE.IN & (_BV(5))))
+#define SW1_IS_SET() (!(PORTF.IN & (_BV(1))))
+#define SW2_IS_SET() (!(PORTF.IN & (_BV(2))))
 
 #define LED_POWER_ON()      do { PORTD.OUTSET = (uint8_t)(_BV(5)); } while(0)
 #define LED_POWER_OFF()     do { PORTD.OUTCLR = (uint8_t)(_BV(5)); } while(0)

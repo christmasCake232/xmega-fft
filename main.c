@@ -61,14 +61,15 @@ void main(void)
     printf("Start\n");
     
     
+    
     for(;;)
     {
-        
+
         adcx_start();
-        
         dma_block();
         
-        lcd_writeBuffer((uint8_t *)dma_data);
+        
+        lcd_barGraph(dma_data);
         
     }
     

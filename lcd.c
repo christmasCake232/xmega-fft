@@ -21,6 +21,7 @@ static inline void sendCmd(const uint8_t);
 static inline void sendData(const uint8_t);
 static inline void st7565_set_brightness(uint8_t);
 
+static inline uint8_t foo(const uint8_t, const uint8_t);
 
 
 
@@ -101,12 +102,15 @@ void lcd_clearScreen(void)
     
 } // End of lcd_clearScreen().
 
-// TODO: this is not real. For testing.
-void lcd_writeBuffer(uint8_t *buf)
+
+
+
+
+
+void lcd_barGraph(uint8_t *arr)
 {
     uint8_t p = 0;
     uint8_t c = 0;
-    uint16_t index = 0;
     
     for(p = 0; p < PAGE_COUNT; ++p)
     {
@@ -116,11 +120,11 @@ void lcd_writeBuffer(uint8_t *buf)
             sendCmd(CMD_SET_COLUMN_LOWER | (c & 0x0F));
             sendCmd(CMD_SET_COLUMN_UPPER | ((c >> 4) & 0x0F));
             
-            sendData(buf[index]);
-            //++index;
-            index += 2;
+            sendData(foo(arr[c], p));
+            
         }
     }
+    
     
 }
 
@@ -181,6 +185,47 @@ static inline void st7565_set_brightness(uint8_t val)
     
 } // End of st7565_set_brightness().
 
+
+static inline uint8_t foo(const uint8_t d, const uint8_t p)
+{
+    static const uint8_t fooTable[] = {0, 1, 3 , 7, 15, 31, 63, 127};
+    
+    switch(p)
+    {
+        case 0:
+            if(d > 7)
+                return 0xFF;
+            else 
+                return fooTable[d];
+            
+        case 1:
+            if(d > 15)
+                return 0xFF;
+            else if(d > 8)
+                return fooTable[d -8];
+            else 
+                return 0;
+            
+        case 2:
+            if(d > 23)
+                return 0xFF;
+            else if(d > 16)
+                return fooTable[d -16];
+            else 
+                return 0;
+                
+        case 3:
+            if(d > 31)
+                return 0xFF;
+            else if(d > 24)
+                return fooTable[d -24];
+            else 
+                return 0;
+        
+        default:
+            return 0;
+    }
+}
 
 
 
