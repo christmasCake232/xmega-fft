@@ -5,9 +5,12 @@
 
 #include <avr/io.h>
 
-void adcx_init(void);
+void adc_init(void);
 
-void adcx_start(void);
+void adc_start(void);
+
+void timer_start(void);
+void timer_stop(void);
  
 
 
