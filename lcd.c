@@ -6,7 +6,6 @@
 
 
 #include <avr/io.h>
-#include <util/delay.h>
 
 #include "lcd.h"
 #include "usart_spi.h"
@@ -44,24 +43,22 @@ void lcd_init(void)
     sendCmd(CMD_SET_COM_NORMAL);
      
     // Initial display line 
-    sendCmd(CMD_SET_DISP_START_LINE);
+    sendCmd(CMD_SET_DISP_START_LINE(0));
     
     // turn on voltage converter (VC=1, VR=0, VF=0) 
     sendCmd(CMD_SET_POWER_CONTROL | 0x4);
      
     // wait for 50% rising 
-    _delay_ms(50);
      
     // turn on voltage regulator (VC=1, VR=1, VF=0) 
     sendCmd(CMD_SET_POWER_CONTROL | 0x6);
     
     // wait >=50ms 
-    _delay_ms(50);
     
     // turn on voltage follower (VC=1, VR=1, VF=1) 
     sendCmd(CMD_SET_POWER_CONTROL | 0x7); 
+    
     // wait 
-    _delay_ms(10);
      
     // set lcd operating voltage (regulator resistor, ref voltage resistor) 
     sendCmd(CMD_SET_RESISTOR_RATIO | 0x2);    
@@ -90,11 +87,11 @@ void lcd_clearScreen(void)
     
     for(p = 0; p < PAGE_COUNT; ++p)
     {
-        sendCmd(CMD_SET_PAGE | p);
+        sendCmd(CMD_SET_PAGE(p));
         for(c = 0; c < COLUMN_COUNT; ++c)
         {
-            sendCmd(CMD_SET_COLUMN_LOWER | (c & 0x0F));
-            sendCmd(CMD_SET_COLUMN_UPPER | ((c >> 4) & 0x0F));
+            sendCmd(CMD_SET_COLUMN_LOWER(c));
+            sendCmd(CMD_SET_COLUMN_UPPER(c));
             
             sendData(0x00);
         }
@@ -114,11 +111,11 @@ void lcd_barGraph(uint8_t *arr)
     
     for(p = 0; p < PAGE_COUNT; ++p)
     {
-        sendCmd(CMD_SET_PAGE | p);
+        sendCmd(CMD_SET_PAGE(p));
         for(c = 0; c < COLUMN_COUNT; ++c)
         {
-            sendCmd(CMD_SET_COLUMN_LOWER | (c & 0x0F));
-            sendCmd(CMD_SET_COLUMN_UPPER | ((c >> 4) & 0x0F));
+            sendCmd(CMD_SET_COLUMN_LOWER(c));
+            sendCmd(CMD_SET_COLUMN_UPPER(c));
             
             sendData(foo(arr[c], p));
             
@@ -135,7 +132,7 @@ static inline void strobeReset(void)
     PORTF.OUTCLR = (uint8_t)(_BV(3));
     PORTA.OUTCLR = (uint8_t)(_BV(3));
     
-    _delay_ms(50);
+    // wait.
     
     PORTA.OUTSET = (uint8_t)(_BV(3));
     
