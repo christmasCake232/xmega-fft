@@ -17,6 +17,8 @@ void dma_init(uint8_t *arr, const uint16_t arrSize)
     // Single mode. (Stop at every burst)
     DMA.CH0.CTRLA = DMA_CH_SINGLE_bm | DMA_CH_BURSTLEN_2BYTE_gc;
     
+    DMA.CH0.CTRLB = DMA_CH_TRNINTLVL_HI_gc;
+    
     DMA.CH0.ADDRCTRL = DMA_CH_SRCRELOAD_BURST_gc 
                      | DMA_CH_SRCDIR_INC_gc 
                      | DMA_CH_DESTRELOAD_TRANSACTION_gc 
