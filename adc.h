@@ -5,7 +5,7 @@
 
 #include <avr/io.h>
 
-void adc_init(void);
+void adc_init(const uint8_t);
 
 void adc_start(void);
 

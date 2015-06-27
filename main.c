@@ -3,6 +3,7 @@
 #include <avr/io.h>
 #include <stdio.h>
 #include <avr/interrupt.h>
+#include <math.h>
 
 #include "system.h"
 #include "stdioWrapper.h"
@@ -12,8 +13,7 @@
 #include "lcd.h"
 #include "dac.h"
 
-
-#define BUFFER_SIZE (128)
+#define BUFFER_SIZE (1024)
 
 
 
@@ -33,6 +33,7 @@ uint16_t map(uint16_t x, uint16_t in_min, uint16_t in_max, uint16_t out_min, uin
 
 volatile uint16_t dmaData[BUFFER_SIZE];
 volatile uint8_t lcdData[128];
+volatile double lcdDatad[128];
 
 
 void main(void)
@@ -44,7 +45,7 @@ void main(void)
     stdioWrapper_init(&USARTC0);
     
     // Peripheral setup.
-    adc_init();
+    adc_init(20);
     //dac_init();
     dma_init((uint8_t *)dmaData, BUFFER_SIZE *2);
     lcd_init();
@@ -56,10 +57,7 @@ void main(void)
     printf("Start\n");
     
     
-    uint16_t index;
-    uint16_t min = 0;
-    uint16_t max = 0;
-        
+    
     for(;;)
     {
         
@@ -68,19 +66,8 @@ void main(void)
         dma_block();
         LED_0_TGL();
         
-        // Find and set min and max. 
-        for(index = 0, max = 0, min = 0xFFFF; index < BUFFER_SIZE; ++index)
-        {
-            if(dmaData[index] > max)
-                max = dmaData[index];
-            
-            if(dmaData[index] < min)
-                min = dmaData[index];
-        }
         
-        for(index = 0; index < 128; ++index)
-            lcdData[index] = map(dmaData[index], min, max, 0, 32);
-        LED_1_TGL();
+
         
         lcd_barGraph((uint8_t *)lcdData);
         
