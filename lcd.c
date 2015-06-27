@@ -27,10 +27,10 @@ static inline uint8_t foo(const uint8_t, const uint8_t);
 
 void lcd_init(void)
 {
-    
+    // Setup spi for the LCD.
     usartxx_spi_init(&USARTD0);
     
-    
+    // Reset the LCD.
     strobeReset();
     
     // LCD bias select 
@@ -45,36 +45,29 @@ void lcd_init(void)
     // Initial display line 
     sendCmd(CMD_SET_DISP_START_LINE(0));
     
-    // turn on voltage converter (VC=1, VR=0, VF=0) 
+    // turn on voltage converter (VC=1, VR=0, VF=0)
+    // wait for 50% rising
     sendCmd(CMD_SET_POWER_CONTROL | 0x4);
      
-    // wait for 50% rising 
-     
-    // turn on voltage regulator (VC=1, VR=1, VF=0) 
+    // turn on voltage regulator (VC=1, VR=1, VF=0)
+    // wait >=50ms
     sendCmd(CMD_SET_POWER_CONTROL | 0x6);
-    
-    // wait >=50ms 
     
     // turn on voltage follower (VC=1, VR=1, VF=1) 
     sendCmd(CMD_SET_POWER_CONTROL | 0x7); 
     
-    // wait 
-     
-    // set lcd operating voltage (regulator resistor, ref voltage resistor) 
+    // set lcd operating voltage (regulator resistor, ref voltage resistor)
+    // wait
     sendCmd(CMD_SET_RESISTOR_RATIO | 0x2);    
     
     // ----
-    
     sendCmd(CMD_DISPLAY_ON);
-    
     
     sendCmd(CMD_SET_ALLPTS_NORMAL);
     
     setBrightness(0x18);
     
-       
     lcd_clearScreen();
-    
     
 } // End of lcd_init().
 
@@ -142,7 +135,6 @@ static inline void strobeReset(void)
 
 static inline void sendCmd(const uint8_t c)
 {
-        
     PORTD.OUTCLR = (uint8_t)(_BV(0));
     
     // SS low.
@@ -178,7 +170,7 @@ static inline void setBrightness(uint8_t val)
     
 } // End of setBrightness().
 
-
+// TODO: Rename this.
 static inline uint8_t foo(const uint8_t d, const uint8_t p)
 {
     static const uint8_t fooTable[] = {0, 1, 3 , 7, 15, 31, 63, 127};
@@ -218,7 +210,8 @@ static inline uint8_t foo(const uint8_t d, const uint8_t p)
         default:
             return 0;
     }
-}
+    
+} // End of foo().
 
 
 

@@ -49,7 +49,7 @@ void main(void)
     dma_init((uint8_t *)dmaData, BUFFER_SIZE *2);
     lcd_init();
     
-    PMIC.CTRL = PMIC_HILVLEN_bm;
+    PMIC.CTRL = PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
     sei();
     
     // Test start.
@@ -62,6 +62,7 @@ void main(void)
     
     for(;;)
     {
+        // SW0 used for cycling through the sample rate.
         if(SW0_IS_SET())
         {
             ++ex;
@@ -91,28 +92,10 @@ void main(void)
         {
             lcdData[index] = map(dmaData[index], min, max, 0, 33); 
         }
-
+        
         
         lcd_barGraph((uint8_t *)lcdData);
         
     } // End of for ever loop.
     
 } // End of main().
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
