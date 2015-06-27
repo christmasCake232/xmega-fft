@@ -19,7 +19,7 @@
 
 ISR(DMA_CH0_vect)
 {
-    timer_stop();
+    adc_stop();
 }
 
 
@@ -33,7 +33,6 @@ uint16_t map(uint16_t x, uint16_t in_min, uint16_t in_max, uint16_t out_min, uin
 
 volatile uint16_t dmaData[BUFFER_SIZE];
 volatile uint8_t lcdData[128];
-volatile double lcdDatad[128];
 
 
 void main(void)
@@ -56,23 +55,48 @@ void main(void)
     // Test start.
     printf("Start\n");
     
-    
+    uint16_t min;
+    uint16_t max;
+    uint16_t index;
+    uint8_t ex = 9;
     
     for(;;)
     {
+        if(SW0_IS_SET())
+        {
+            ++ex;
+            if(ex > 20)
+                ex = 9;
+                
+            adc_init(ex);
+            
+            while(SW0_IS_SET());
+        }
         
-        //adc_start();
-        timer_start();
+        
+        adc_start();
         dma_block();
         LED_0_TGL();
         
+        for(index = 0, min = 0xFFFF, max = 0; index < 128; ++index)
+        {
+            if(dmaData[index] < min)
+                min = dmaData[index];
+            
+            if(dmaData[index] > max)
+                max = dmaData[index];
+        }
         
+        for(index = 0; index < 128; ++index)
+        {
+            lcdData[index] = map(dmaData[index], min, max, 0, 33); 
+        }
 
         
         lcd_barGraph((uint8_t *)lcdData);
         
     } // End of for ever loop.
-        
+    
 } // End of main().
 
 

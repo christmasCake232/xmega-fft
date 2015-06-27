@@ -15,7 +15,6 @@ static inline void timer_setOverFlow(const uint8_t);
 void adc_init(const uint8_t ex)
 {
     // Setup the timer.
-    timer_stop();
     timer_init(ex);
     
     ADCA.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_SINGLEENDED_gc;
@@ -38,34 +37,29 @@ void adc_init(const uint8_t ex)
 
 
 void adc_start(void)
-{    
-    ADCA.CH0.CTRL |= ADC_CH_START_bm;
-    
-} // End of adc_start().
-
-
-void timer_start(void)
 {
     // Start the timer.
     TCC0.CTRLA = TC_CLKSEL_DIV1_gc;
     
+    // The ADC is running off the timer.
+    //ADCA.CH0.CTRL |= ADC_CH_START_bm;
     
-} // End of timer_start().
+} // End of adc_start().
 
-void timer_stop(void)
+void adc_stop(void)
 {
     // Stop the timer.
     TCC0.CTRLA = 0;
     
-} // End of timer_stop().
+} // End of adc_stop().
 
 
 /* <----- static inline fun() -----> */
 
 static inline void timer_init(const uint8_t ex)
 {
-
-    
+    // Stop the timer.
+    TCC0.CTRLA = 0;
     
     // Set timer in normal mode.
     TCC0.CTRLB = TC_WGMODE_NORMAL_gc;
@@ -85,19 +79,8 @@ static inline void timer_init(const uint8_t ex)
     // Reset the timer count.
     TCC0.CNT = 0;
     
-    timer_setOverFlow(ex);
-    
     // Set the timer max/top. This is the overflow value.
-    // Let F_CPU = 32MHz and TOP = 0xFFFF -1536.
-    // @DIV8 overflow interval =   62.5Hz
-    // @DIV4 overflow interval =  125.0Hz
-    // @DIV2 overflow interval =  250.0Hz
-    // @DIV1 overflow interval =  500.0Hz
-    // ---
-    // Let F_CPU = 32MHz and TOP = 31249.
-    // @DIV1 overflow interval = 1024.0Hz
-    //TCC0.PER = 31249;
-    
+    timer_setOverFlow(ex);
     
     //TCC0.PERBUF = 0xFFFF;
     
@@ -184,7 +167,7 @@ static inline void timer_setOverFlow(const uint8_t ex)
             
     } // End of switch.
     
-}
+} // End of timer_setOverFlow().
 
 
 
@@ -192,8 +175,6 @@ static inline void timer_setOverFlow(const uint8_t ex)
 
 ISR(TCC0_OVF_vect)
 {
-    //static uint8_t state = 0;
-    
     // Start the ADC on timer overflow.
     ADCA.CH0.CTRL |= ADC_CH_START_bm;
     

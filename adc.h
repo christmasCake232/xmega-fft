@@ -8,10 +8,12 @@
 void adc_init(const uint8_t);
 
 void adc_start(void);
+void adc_stop(void);
 
+/*
 void timer_start(void);
 void timer_stop(void);
- 
+*/
 
 
 #endif /* ADC_H */
