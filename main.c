@@ -47,7 +47,7 @@ void main(void)
     stdioWrapper_init(&USARTC0);
     
     // Peripheral setup.
-    adc_init(20, preTable[7]);
+    adc_init(20, preTable[2]);
     //dac_init();
     dma_init((uint8_t *)dmaData, BUFFER_SIZE *2);
     lcd_init();
@@ -62,7 +62,7 @@ void main(void)
     uint16_t max;
     uint16_t index;
     uint8_t ex = 9;
-    uint8_t pre = 0;
+    uint8_t pre = 2;
     
     for(;;)
     {

@@ -6,12 +6,9 @@
 
 #include <avr/io.h>
 
-#include "system.h"
 #include "adc.h"
 #include "timeTable.h"
 
-
-static inline void adc_setInput(const uint8_t);
 
 static inline void timer_init(const uint8_t);
 static inline void timer_setOverFlow(const uint8_t);
@@ -34,7 +31,6 @@ void adc_init(const uint8_t ex, const ADC_PRESCALER_t prescl)
     
     ADCA.CTRLA = ADC_ENABLE_bm;
     ADCA.CTRLB = ADC_RESOLUTION_12BIT_gc;
-    //ADCA.PRESCALER = ADC_PRESCALER_DIV512_gc;
     ADCA.PRESCALER = prescl;
     
     ADCA.REFCTRL = ADC_REFSEL_INTVCC_gc;
@@ -66,11 +62,6 @@ void adc_stop(void)
 
 /* <----- static inline fun() -----> */
 
-static inline void adc_setInput(const uint8_t u)
-{
-    
-}
-
 
 
 
@@ -84,7 +75,6 @@ static inline void timer_init(const uint8_t ex)
     
     TCC0.CTRLC = 0;
     TCC0.CTRLD = 0;
-    //TCC0.CTRLD = TC_EVSEL_CH0_gc;
     
     // Set timer in normal mode. 
     TCC0.CTRLE = TC_BYTEM_NORMAL_gc;
@@ -186,7 +176,8 @@ static inline void timer_setOverFlow(const uint8_t ex)
 static inline void eventCh0_init(void)
 {
     EVSYS_CH0MUX = EVSYS_CHMUX_TCC0_OVF_gc;
-}
+    
+} // End of eventCh0_init().
 
 
 
