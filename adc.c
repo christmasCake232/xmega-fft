@@ -1,21 +1,30 @@
 
+/*
+ * This ADC is using event CH0 and TCC0.
+ */
 
 
 #include <avr/io.h>
-#include <avr/interrupt.h>
 
 #include "system.h"
 #include "adc.h"
 #include "timeTable.h"
 
 
+static inline void adc_setInput(const uint8_t);
+
 static inline void timer_init(const uint8_t);
 static inline void timer_setOverFlow(const uint8_t);
 
-void adc_init(const uint8_t ex)
+static inline void eventCh0_init(void);
+
+void adc_init(const uint8_t ex, const ADC_PRESCALER_t prescl)
 {
     // Setup the timer.
     timer_init(ex);
+    
+    // Setup event CH0.
+    eventCh0_init();
     
     ADCA.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_SINGLEENDED_gc;
     //ADCB.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_INTERNAL_gc;
@@ -23,14 +32,15 @@ void adc_init(const uint8_t ex)
     ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN0_gc;
     //ADCB.CH0.MUXCTRL = (0x03<<3);
     
-    //ADCA.CH0.INTCTRL = ADC_CH_INTLVL_HI_gc;
-    
     ADCA.CTRLA = ADC_ENABLE_bm;
     ADCA.CTRLB = ADC_RESOLUTION_12BIT_gc;
-    ADCA.PRESCALER = ADC_PRESCALER_DIV512_gc;
+    //ADCA.PRESCALER = ADC_PRESCALER_DIV512_gc;
+    ADCA.PRESCALER = prescl;
     
     ADCA.REFCTRL = ADC_REFSEL_INTVCC_gc;
     //ADCB.REFCTRL = ADC_REFSEL_INT1V_gc;
+    
+    ADCA.EVCTRL = ADC_SWEEP_0_gc | ADC_EVSEL_0123_gc | ADC_EVACT_CH0_gc;
 
     
 } // End of adc_init().
@@ -56,6 +66,14 @@ void adc_stop(void)
 
 /* <----- static inline fun() -----> */
 
+static inline void adc_setInput(const uint8_t u)
+{
+    
+}
+
+
+
+
 static inline void timer_init(const uint8_t ex)
 {
     // Stop the timer.
@@ -66,15 +84,10 @@ static inline void timer_init(const uint8_t ex)
     
     TCC0.CTRLC = 0;
     TCC0.CTRLD = 0;
+    //TCC0.CTRLD = TC_EVSEL_CH0_gc;
     
     // Set timer in normal mode. 
     TCC0.CTRLE = TC_BYTEM_NORMAL_gc;
-    
-    // Enable timer overflow interrupt.
-    TCC0.INTCTRLA = TC_OVFINTLVL_HI_gc;
-    
-    // Clear the timer overflow count.
-    TCC0.INTFLAGS = TC0_OVFIF_bm;
     
     // Reset the timer count.
     TCC0.CNT = 0;
@@ -170,21 +183,10 @@ static inline void timer_setOverFlow(const uint8_t ex)
 } // End of timer_setOverFlow().
 
 
-
-
-
-ISR(TCC0_OVF_vect)
+static inline void eventCh0_init(void)
 {
-    // Start the ADC on timer overflow.
-    ADCA.CH0.CTRL |= ADC_CH_START_bm;
-    
+    EVSYS_CH0MUX = EVSYS_CHMUX_TCC0_OVF_gc;
 }
 
-/*
-ISR(ADCA_CH0_vect)
-{
-    Not used.
-}
-*/
 
 
