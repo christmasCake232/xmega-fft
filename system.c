@@ -2,6 +2,7 @@
 
 
 #include <avr/io.h>
+#include <avr/sleep.h>
 
 #include "system.h"
 
@@ -72,3 +73,15 @@ void system_gpio_init(void)
     PORTE.OUTSET = (uint8_t)(_BV(4));
 
 } // End of system_gpio_init().
+
+
+void system_enterSleep(void)
+{
+    
+    set_sleep_mode(SLEEP_MODE_IDLE);
+    
+    sleep_enable();
+    sleep_cpu();
+    sleep_disable();
+    
+} // End of system_enterSleep().

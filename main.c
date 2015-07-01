@@ -12,7 +12,7 @@
 #include "lcd.h"
 #include "dac.h"
 
-#define BUFFER_SIZE (128)
+#define BUFFER_SIZE (1024)
 
 
 
@@ -23,10 +23,27 @@ ISR(DMA_CH0_vect)
 
 
 
+
 uint16_t map(uint16_t x, uint16_t in_min, uint16_t in_max, uint16_t out_min, uint16_t out_max)
 {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+
+void sampleADC(void)
+{
+    // Enable the dma and  start the sampling.
+    dma_enable();
+    adc_start();
+    
+    // Sleep until the adc is done sampling.
+    while(!dma_isDone())
+            system_enterSleep();
+    
+    // Clear the interrupt flags.
+    dma_clearFlag();
+    
+} // End of sampleADC().
+
 
 ADC_PRESCALER_t preTable[] = {ADC_PRESCALER_DIV4_gc,   ADC_PRESCALER_DIV8_gc, 
                                      ADC_PRESCALER_DIV16_gc,  ADC_PRESCALER_DIV32_gc, 
@@ -90,11 +107,10 @@ void main(void)
         }
         
         
-        adc_start();
-        dma_block();
+        sampleADC();
         LED_0_TGL();
         
-        for(index = 0, min = 0xFFFF, max = 0; index < 128; ++index)
+        for(index = 0, min = 0xFFFF, max = 0; index < BUFFER_SIZE; ++index)
         {
             if(dmaData[index] < min)
                 min = dmaData[index];

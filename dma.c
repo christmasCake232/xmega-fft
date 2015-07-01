@@ -12,7 +12,7 @@ static inline void setAddr(volatile void *, volatile register8_t *, volatile reg
 
 void dma_init(uint8_t *arr, const uint16_t arrSize)
 {
-    DMA.CTRL = DMA_ENABLE_bm;
+    
     
     // Single mode. (Stop at every burst)
     DMA.CH0.CTRLA = DMA_CH_SINGLE_bm | DMA_CH_BURSTLEN_2BYTE_gc;
@@ -37,19 +37,33 @@ void dma_init(uint8_t *arr, const uint16_t arrSize)
     // Data to the array.
     setAddr(arr, &(DMA.CH0.DESTADDR0), &(DMA.CH0.DESTADDR1), &(DMA.CH0.DESTADDR2));
     
-    DMA.CH0.CTRLA |= DMA_CH_ENABLE_bm;
+    DMA.CTRL = DMA_ENABLE_bm;
     
-}
+} // End of dma_init().
 
 uint8_t dma_isDone(void)
 {
+    // Poll CH0 DMA transaction completion.
     return bit_is_set(DMA.INTFLAGS, DMA_CH0TRNIF_bp);
-}
+    
+} // End of dma_isDone().
 
 void dma_clearFlag(void)
 {
+    // The interrupt will not clear this flag?
     DMA.INTFLAGS |= DMA_CH0TRNIF_bm;
-}
+    
+} // End of dma_clearFlag().
+
+void dma_enable(void)
+{
+    // Maybe add a way to reset the DMA in this fun().
+    
+    
+    // This must be enable after each DMA transaction. 
+    DMA.CH0.CTRLA |= DMA_CH_ENABLE_bm;
+    
+} // End of dma_enable().
 
 void dma_block(void)
 {
@@ -57,8 +71,8 @@ void dma_block(void)
     DMA.INTFLAGS |= DMA_CH0TRNIF_bm;
     
     DMA.CH0.CTRLA |= DMA_CH_ENABLE_bm;
-}
-
+    
+} // End of dma_block().
 
 /* <----- static inline fun() -----> */
 

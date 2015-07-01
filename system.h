@@ -37,6 +37,8 @@ void system_clocks_init(void);
 
 void system_gpio_init(void);
 
+void system_enterSleep(void);
+
 
 
 #endif /* SYSTEM_H */

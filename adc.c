@@ -23,6 +23,8 @@ void adc_init(const uint8_t ex, const ADC_PRESCALER_t prescl)
     // Setup event CH0.
     eventCh0_init();
     
+    ADCA.CAL =  (PRODSIGNATURES_ADCACAL1 << 8) | PRODSIGNATURES_ADCACAL0;
+    
     ADCA.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_SINGLEENDED_gc;
     //ADCB.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_INTERNAL_gc;
     
