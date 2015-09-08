@@ -22,8 +22,7 @@ void usartxx_spi_init(USART_t *usartxx)
     
     // TODO: Update this.
     // Set USART baud rate.
-    // Assuming F_CPU is fixed at 2MHz.
-    // Baud Rate 9600 @ 2MHz.
+    // Assuming F_CPU is fixed at 32MHz.
     usartxx->BAUDCTRLB = 0; // BSCALE = 0 as well.
     usartxx->BAUDCTRLA = 12;
     

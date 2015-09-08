@@ -1,6 +1,7 @@
 
 /*
  * This ADC is using event CH0 and TCC0.
+ * Assuming F_CPU is fixed at 32MHz.
  */
 
 
@@ -23,6 +24,7 @@ void adc_init(const uint8_t ex, const ADC_PRESCALER_t prescl)
     // Setup event CH0.
     eventCh0_init();
     
+    // Load cal for the adc. 
     ADCA.CAL =  (PRODSIGNATURES_ADCACAL1 << 8) | PRODSIGNATURES_ADCACAL0;
     
     ADCA.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_SINGLEENDED_gc;
@@ -38,10 +40,49 @@ void adc_init(const uint8_t ex, const ADC_PRESCALER_t prescl)
     ADCA.REFCTRL = ADC_REFSEL_INTVCC_gc;
     //ADCB.REFCTRL = ADC_REFSEL_INT1V_gc;
     
+    // What is going on here.
     ADCA.EVCTRL = ADC_SWEEP_0_gc | ADC_EVSEL_0123_gc | ADC_EVACT_CH0_gc;
 
     
 } // End of adc_init().
+
+
+void adc_init_autoPrescale(const uint8_t ex)
+{
+    // TODO: do this.
+    // Assuming F_CPU is fixed at 32MHz. 
+    // Pick the ADC prescaler based on the sample rate.
+    // ex in the set [3, 7] or [9, 25]
+    
+    ADC_PRESCALER_t prescl = ADC_PRESCALER_DIV512_gc;
+    
+    switch(ex)
+    {
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+            prescl = ADC_PRESCALER_DIV64_gc;
+            break;
+            
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+            prescl = ADC_PRESCALER_DIV256_gc;
+            break;
+            
+        case 7:
+        default:
+            prescl = ADC_PRESCALER_DIV512_gc;
+            break;
+    }
+    
+    adc_init(ex, prescl);
+    
+} // End of adc_init_autoPrescale().
 
 
 void adc_start(void)
@@ -49,15 +90,14 @@ void adc_start(void)
     // Start the timer.
     TCC0.CTRLA = TC_CLKSEL_DIV1_gc;
     
-    // The ADC is running off the timer.
-    //ADCA.CH0.CTRL |= ADC_CH_START_bm;
-    
 } // End of adc_start().
 
 void adc_stop(void)
 {
     // Stop the timer.
     TCC0.CTRLA = 0;
+    // Clear the timer count.
+    TCC0.CNT = 0;
     
 } // End of adc_stop().
 
@@ -69,6 +109,8 @@ void adc_stop(void)
 
 static inline void timer_init(const uint8_t ex)
 {
+    // Assuming F_CPU is fixed at 32MHz.
+    
     // Stop the timer.
     TCC0.CTRLA = 0;
     
@@ -87,14 +129,15 @@ static inline void timer_init(const uint8_t ex)
     // Set the timer max/top. This is the overflow value.
     timer_setOverFlow(ex);
     
-    //TCC0.PERBUF = 0xFFFF;
-    
 } // End of timer_init().
 
 
 
 static inline void timer_setOverFlow(const uint8_t ex)
 {
+    
+    // See timeTable.h
+    
     switch(ex)
     {
         // Base 10.

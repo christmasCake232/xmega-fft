@@ -1,0 +1,6 @@
+
+
+FFT vs FHT 
+http://www.waitingforfriday.com/index.php/Fast_Hartley_Transformation_Library_for_AVR_microcontrollers
+
+Seems good for low RAM system.
